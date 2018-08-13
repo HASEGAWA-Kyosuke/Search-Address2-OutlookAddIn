@@ -31,7 +31,7 @@ namespace Search_Address2_OutlookAddIn {
                 return;
             }
 
-            (new System.Threading.Thread(() => {
+            var thread = new System.Threading.Thread(() => {
                 try {
                     var form = new FormSearchAddress(inspector);
                     formTable.Add(inspector, form);
@@ -42,7 +42,9 @@ namespace Search_Address2_OutlookAddIn {
                 } catch (Exception) {
                     return;
                 }
-            })).Start();
+            });
+            thread.SetApartmentState(System.Threading.ApartmentState.STA);
+            thread.Start();
         }
 
         private void InspectorBeforeChange(ref bool cancel) {
