@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Search_Address2_OutlookAddIn.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Host" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Base" Type="System.String" Scope="User">
+      <Value Profile="(Default)">o=,dc=,dc=,dc=</Value>
+    </Setting>
+    <Setting Name="Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">389</Value>
+    </Setting>
+    <Setting Name="Filter1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">(mail={0}*)(sn;lang-en={0}*)(givenName;lang-en={0}*)(sn;lang-ja={0}*)(givenName;lang-ja={0}*)</Value>
+    </Setting>
+    <Setting Name="Filter2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">(&amp;(sn;lang-en={0}*)(givenName;lang-en={1}*))(&amp;(sn;lang-ja={0}*)(givenName;lang-ja={1}*))</Value>
+    </Setting>
+    <Setting Name="Offset_X" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">85</Value>
+    </Setting>
+    <Setting Name="Offset_Y" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="MaxRecords" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
