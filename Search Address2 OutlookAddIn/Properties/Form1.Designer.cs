@@ -34,6 +34,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.labelReplyTo = new System.Windows.Forms.Label();
             this.labelReplyToList = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listBoxKind
@@ -111,6 +112,7 @@
             // 
             // labelReplyTo
             // 
+            this.labelReplyTo.AutoEllipsis = true;
             this.labelReplyTo.BackColor = System.Drawing.Color.Yellow;
             this.labelReplyTo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.labelReplyTo.Font = new System.Drawing.Font("MS UI Gothic", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -138,6 +140,21 @@
             this.labelReplyToList.Text = "label1";
             this.labelReplyToList.Visible = false;
             // 
+            // label1
+            // 
+            this.label1.AutoEllipsis = true;
+            this.label1.BackColor = System.Drawing.Color.Yellow;
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.label1.Location = new System.Drawing.Point(78, 22);
+            this.label1.Margin = new System.Windows.Forms.Padding(1);
+            this.label1.Name = "label1";
+            this.label1.Padding = new System.Windows.Forms.Padding(5);
+            this.label1.Size = new System.Drawing.Size(202, 53);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "LDAP Server Connection Error\r\n\r\nSet the options collectly.";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label1.Visible = false;
+            // 
             // FormSearchAddress
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -145,6 +162,7 @@
             this.BackColor = System.Drawing.Color.Green;
             this.ClientSize = new System.Drawing.Size(620, 152);
             this.ControlBox = false;
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.labelReplyToList);
             this.Controls.Add(this.labelReplyTo);
             this.Controls.Add(this.listBoxAddress);
@@ -176,5 +194,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label labelReplyTo;
         private System.Windows.Forms.Label labelReplyToList;
+        private System.Windows.Forms.Label label1;
     }
 }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Search_Address2_OutlookAddIn {
     internal class MailAddress {
+        internal Connection Connection { get; }
         private readonly AddressKind addressKind;
         private readonly TextBox textBox;
         private readonly ListBox listBox;
@@ -20,47 +20,41 @@ namespace Search_Address2_OutlookAddIn {
             this.textBox = textBox;
             this.listBox = listBox;
             replyToAddress = new ReplyToAddress(dispSwitch, listReplyTo);
+            try {
+                var def = Properties.Settings.Default;
+                Connection = new Connection($"LDAP://{def.Host}:{def.Port}/{def.Base}");
+            } catch (System.Exception) {
+                Connection = null;
+            }
         }
 
         internal List<string> Search(string s, int maxRecords) {
-            if (s.Length == 0) {
+            if (Connection == null || s.Length == 0) {
                 return null;
             }
 
-            var connection = new ADODB.Connection { Provider = "ADsDSOObject", CommandTimeout = 3 };
-            connection.Open("Active Directory Provider");
-            var cmd = new ADODB.Command { ActiveConnection = connection };
-
-            Properties.Settings Default = Properties.Settings.Default;
+            var def = Properties.Settings.Default;
             string[] sa = s.Split(' ');
-            string query = sa.Length == 1 ?
-                Default.Filter1.Replace("{0}", s) : Default.Filter2.Replace("{0}", sa[0]).Replace("{1}", sa[1]);
-
-            cmd.CommandText = $"<LDAP://{Default.Host}:{Default.Port}/{Default.Base}>;(|{query});cn,mail;subtree";
-
-            ADODB.Recordset rc;
-            try {
-                rc = cmd.Execute(out object RecordsAffected);
-                if (rc.EOF || rc.BOF) {
-                    return null;
-                }
-            } catch (Exception) {
+            string query = "(|" +
+                (sa.Length == 1 ? def.Filter1.Replace("{0}", s) : def.Filter2.Replace("{0}", sa[0]).Replace("{1}", sa[1]))
+                + ")";
+            List<List<string>> resultList = Connection.Search(query, new string[] { "cn", "mail" }, maxRecords);
+            if (resultList == null) {
                 return null;
             }
 
             var addressList = new List<string>();
-            rc.MoveFirst();
-            for (int i = 0; i < maxRecords && !rc.EOF; rc.MoveNext(), i++) {
-                try {
-                    addressList.Add($"{rc.Fields[0].Value[0]} <{rc.Fields[1].Value[0]}>");
-                } catch (Exception) {
-                    continue;
-                }
+            for (int i = 0; i < resultList.Count; i++) {
+                addressList.Add($"{resultList[i][0]} <{resultList[i][1]}>");
             }
             return addressList;
         }
 
         internal void Move(Outlook.MailItem mail) {
+            if (Connection == null) {
+                return;
+            }
+
             if (addressKind.Transfer(mail, GetAddress())) {
                 listBox.Items.Clear();
                 listBox.Visible = false;

@@ -28,7 +28,13 @@ namespace Search_Address2_OutlookAddIn {
             timerCount = 0;
             searchThread = null;
             myInspector = inspector;
+
             mailAddress = new MailAddress(buttonKind, textBoxAddress, listBoxAddress, labelReplyTo, labelReplyToList);
+            if (mailAddress.Connection == null) {
+                textBoxAddress.MouseHover += new System.EventHandler((object sender, EventArgs e) => { label1.Visible = true; });
+                textBoxAddress.MouseLeave += new System.EventHandler((object sender, EventArgs e) => { label1.Visible = false; });
+            }
+
             if (((MailItem)inspector.CurrentItem).ReplyRecipientNames != null) {
                 labelReplyToList.Text = inspector.CurrentItem.ReplyRecipientNames.Replace("; ", System.Environment.NewLine);
                 labelReplyTo.Visible = true;

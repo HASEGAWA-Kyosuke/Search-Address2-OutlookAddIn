@@ -27,21 +27,23 @@ namespace Search_Address2_OutlookAddIn {
         }
 
         private void NewInspector(Outlook.Inspector inspector) {
-            if (((Outlook.MailItem)inspector.CurrentItem).Sender != null || formTable.ContainsKey(inspector)) {
+            if (((Outlook.MailItem)inspector.CurrentItem).Sender != null) {
                 return;
             }
 
             var thread = new System.Threading.Thread(() => {
-                try {
-                    var form = new FormSearchAddress(inspector);
+                FormSearchAddress form;
+                lock (formTable) {
+                    if (formTable.ContainsKey(inspector)) {
+                        return;
+                    }
+                    form = new FormSearchAddress(inspector);
                     formTable.Add(inspector, form);
-                    ((Outlook.ItemEvents_10_Event)inspector.CurrentItem).Close += new Outlook.ItemEvents_10_CloseEventHandler(MailClose);
-                    inspector.BeforeMove += new Outlook.InspectorEvents_10_BeforeMoveEventHandler(InspectorBeforeChange);
-                    inspector.BeforeSize += new Outlook.InspectorEvents_10_BeforeSizeEventHandler(InspectorBeforeChange);
-                    form.ShowDialog();
-                } catch (Exception) {
-                    return;
                 }
+                ((Outlook.ItemEvents_10_Event)inspector.CurrentItem).Close += new Outlook.ItemEvents_10_CloseEventHandler(MailClose);
+                inspector.BeforeMove += new Outlook.InspectorEvents_10_BeforeMoveEventHandler(InspectorBeforeChange);
+                inspector.BeforeSize += new Outlook.InspectorEvents_10_BeforeSizeEventHandler(InspectorBeforeChange);
+                form.ShowDialog();
             });
             thread.SetApartmentState(System.Threading.ApartmentState.STA);
             thread.Start();
@@ -53,7 +55,7 @@ namespace Search_Address2_OutlookAddIn {
                 if (formTable.TryGetValue(inspector, out FormSearchAddress form)) {
                     form.TimerOn();
                 }
-            } catch {
+            } catch (Exception) {
                 return;
             }
         }
@@ -61,14 +63,16 @@ namespace Search_Address2_OutlookAddIn {
         private void MailClose(ref bool cancel) {
             Outlook.Inspector inspector = Application.ActiveInspector();
             try {
-                if (formTable.TryGetValue(inspector, out FormSearchAddress form)) {
-                    formTable.Remove(inspector);
-                    form.Invoke(new Action(() => {
-                        form.Close();
-                        form.Dispose();
-                    }));
-                } 
-            } catch {
+                lock (formTable) {
+                    if (formTable.TryGetValue(inspector, out FormSearchAddress form)) {
+                        formTable.Remove(inspector);
+                        form.Invoke(new Action(() => {
+                            form.Close();
+                            form.Dispose();
+                        }));
+                    } 
+                }
+            } catch (Exception) {
                 return;
             }
         }
